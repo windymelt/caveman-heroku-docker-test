@@ -21,17 +21,22 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN ros setup
+RUN ros setup && ros --version
+ENV PATH /root/.roswell/bin:/usr/local/bin:$PATH
 RUN ros install qlot
 RUN ros install clack
-ENV PATH /root/.roswell/bin:/usr/local/bin:$PATH
 
 # Assuming whole application directory is mounted as /app
 WORKDIR /app/
 
-CMD qlot exec ros \
-  -e "(ql:quickload :swank)" \
-  -e "(setf swank::*loopback-interface* \"0.0.0.0\")" \
-  -e "(swank:create-server :port 6005 :dont-close t :style :spawn)" \
-  -l bundle-libs/bundle.lisp \
-  -S . ~/.roswell/bin/clackup --server :woo --address 0.0.0.0 --address :: --port $PORT app.lisp
+COPY ./t ./t
+COPY ./db ./db
+COPY ./src ./src
+COPY ./images ./images
+COPY ./static ./static
+COPY ./templates ./templates
+COPY qlfile *.asd *.lisp docker-bootstrap.sh ./
+
+RUN qlot install && qlot bundle
+
+CMD ./docker-bootstrap.sh
