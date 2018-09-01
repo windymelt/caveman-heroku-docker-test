@@ -1,0 +1,18 @@
+version: '3'
+services:
+  app:
+    container_name: "caveman-heroku-docker-test"
+    build: .
+    environment:
+      PORT: "5000"
+    ports:
+      - "6005:6005" # For development; SWANK port. cf. Dockerfile
+      - "5000:5000"
+    volumes:
+      - ./:/app
+      - ./images:/images
+      - cache:/root/.cache
+      - slime_cache:/root/.slime
+volumes:
+  cache:
+  slime_cache:
