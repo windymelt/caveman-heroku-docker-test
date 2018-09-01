@@ -10,8 +10,6 @@ services:
       - "5000:5000"
     volumes:
       - ./:/app
-      - ./images:/images
-      - cache:/root/.cache
       - slime_cache:/root/.slime
 volumes:
   cache:
